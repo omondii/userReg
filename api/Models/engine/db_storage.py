@@ -12,7 +12,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
-print(os.getenv('DATABASE_URL'))
 
 classes = {
     "User": User,
