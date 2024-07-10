@@ -18,3 +18,4 @@ def get_user(userId):
     :param userId: Loged in users id
     :return:
     """
+    pass
