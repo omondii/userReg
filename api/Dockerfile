@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory inside the container
 WORKDIR /app
 
+# Copy the rest of your application code into the container
+COPY . /app
+
 # Copy the requirements file into the container
 COPY requirements.txt .
 
