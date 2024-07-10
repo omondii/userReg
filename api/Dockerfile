@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 5000
 
 # Start the Flask application
-CMD ["gunicorn", "api.wsgi:app", "--bind", "0.0.0.0:5000"]
+CMD ["gunicorn", "app.wsgi:app", "--bind", "0.0.0.0:5000"]
