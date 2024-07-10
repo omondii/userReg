@@ -92,17 +92,13 @@ def register():
             return jsonify({
                 "status": "Bad request",
                 "message": "Registration unsuccessful",
-                "statusCode": 400,
-                "errors": [{
-                    "field": "general",
-                    "message": str(e)
-                }]
+                "statusCode": 400
             }), 400
     return jsonify({
         "status": "Bad request",
         "message": "Invalid request",
-        "statusCode": 400
-    }), 400
+        "statusCode": 401
+    }), 401
 
 
 @auth.route('/login', methods=['POST'])
