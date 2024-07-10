@@ -1,12 +1,6 @@
 # Use the official Python image as the base image
 FROM python:3.9-alpine
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 # Set the working directory inside the container
 WORKDIR /app
 
