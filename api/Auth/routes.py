@@ -5,7 +5,7 @@ import uuid
 from flask import request, jsonify
 from Auth import auth
 from Models import storage
-from api.Auth.forms import RegistrationForm
+# from api.Auth.forms import RegistrationForm
 from tables import User, Organisation
 from flask_jwt_extended import (create_access_token,
                                 unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
