@@ -23,7 +23,7 @@ def create_app(config_class=Config):
     app.config.from_object(Config)
     JWTManager(app)
 
-    from api.Auth import auth
+    from Auth import auth
     app.register_blueprint(auth)
 
     return app

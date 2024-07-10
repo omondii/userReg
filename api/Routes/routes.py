@@ -2,7 +2,7 @@
 """ application endpoints """
 from flask import request, jsonify, g
 from api.Models.tables import User, Organisation
-from api.Routes import app
+from Routes import app
 from api.Models import storage
 from flask_jwt_extended import (create_access_token,
                                 unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
