@@ -3,10 +3,10 @@
 import uuid
 
 from flask import request, jsonify
-from api.Auth import auth
-from api.Models import storage
+from Auth import auth
+from Models import storage
 from api.Auth.forms import RegistrationForm
-from api.Models.tables import User, Organisation
+from tables import User, Organisation
 from flask_jwt_extended import (create_access_token,
                                 unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
 from werkzeug.security import generate_password_hash, check_password_hash
