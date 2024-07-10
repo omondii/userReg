@@ -3,7 +3,7 @@
 DB storage handles the creation of a the application db,
 a connection to execute defined methods on db data
 """
-from .tables import User, Organisation, Base
+from Models.tables import User, Organisation, Base
 from sqlalchemy import create_engine
 import os
 from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
