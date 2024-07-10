@@ -34,8 +34,7 @@ def register():
                 }), 400
 
             # Check for duplicate data in db
-            existing_user = storage.session.query(User).filter(
-                (User.email == email) | (User.phone == phone)).first()
+            existing_user = storage.get_by_email(User, email)
             if existing_user:
                 return jsonify({
                     "status": "Bad request",
