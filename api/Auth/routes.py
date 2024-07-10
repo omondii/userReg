@@ -89,6 +89,11 @@ def register():
 
         except Exception as e:
             storage.rollback()
+            # Log the exception details for debugging
+            print(f"Exception during registration: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
             return jsonify({
                 "status": "Bad request",
                 "message": "Registration unsuccessful",
@@ -100,21 +105,6 @@ def register():
         "statusCode": 401
     }), 401
 
-
-@auth.route('/login', methods=['POST'])
-def login():
-    """ Logs a user based on provided details """
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-
-    # Validate the input data
-    if not all([email, password]):
-        return jsonify({
-            "status": "Bad request",
-            "message": "Email and password are required",
-            "statusCode": 400
-        }), 400
 
     # Retrieve the user by email
     user = storage.get_by_email(User, email)
