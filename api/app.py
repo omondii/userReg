@@ -21,8 +21,8 @@ def create_app(config_class=Config):
     CORS(app)
     # csrf.init_app(app)
     app.config.from_object(Config)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     JWTManager(app)
-
     from Auth import auth
     app.register_blueprint(auth)
 
