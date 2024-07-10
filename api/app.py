@@ -5,7 +5,7 @@ A simple user authentication application built in python and postgresql
 import os
 
 from flask import Flask
-from .config import Config
+from config import Config
 from flask_cors import CORS
 # from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import JWTManager
