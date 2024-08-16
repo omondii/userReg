@@ -5,7 +5,7 @@ import uuid
 from flask import request, jsonify
 from api.Auth import auth
 from api.Models import storage
-from api.Auth.forms import RegistrationForm
+from api.Auth.utils import generate_token
 from api.Models.tables import User, Organisation
 from flask_jwt_extended import (create_access_token,
                                 unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
@@ -34,8 +34,7 @@ def register():
                 }), 400
 
             # Check for duplicate data in db
-            existing_user = storage.session.query(User).filter(
-                (User.email == email) | (User.phone == phone)).first()
+            existing_user = storage.get_by_email(User, email)
             if existing_user:
                 return jsonify({
                     "status": "Bad request",
@@ -67,10 +66,13 @@ def register():
             # Add user and organisation to the session and commit
             storage.new(user)
             storage.new(organisation)
+
+            # create association table
+            user.organisations.append(organisation)
+
             storage.save()
 
-            # Create an access token for the new user
-            access_token = create_access_token(identity=user.userId)
+            access_token = generate_token(user.UserId)
 
             return jsonify({
                 "status": "success",
@@ -121,7 +123,7 @@ def login():
 
     if user and check_password_hash(user.password, password):
         # Create a new access token
-        access_token = create_access_token(identity=user.userId)
+        access_token = generate_token(user.userId)
 
         response = {
             "status": "success",

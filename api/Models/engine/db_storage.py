@@ -99,7 +99,7 @@ class DBStorage:
     def get(self, cls, id):
         """ Returns the object based on the class name and its ID """
         try:
-            # Use the class parameter to determine which table to query
+            # Use the className to determine which table to query
             if cls == 'User':
                 return self.__session.query(User).filter(User.userId == id).one()
             elif cls == 'Organisation':
