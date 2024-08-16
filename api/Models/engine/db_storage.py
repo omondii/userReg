@@ -30,7 +30,7 @@ class DBStorage:
 
     def __init__(self):
         """
-        Class initiator. Create connection to the db
+        Class initiator. Create a connection to the db for every instance
         """
         self.__engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
@@ -99,17 +99,19 @@ class DBStorage:
     def get(self, cls, id):
         """ Returns the object based on the class name and its ID """
         try:
-            # Use the className to determine which table to query
-            if cls == 'User':
+            if isinstance(cls, str):
+                cls_name = cls
+            else:
+                cls_name = cls.__name__
+
+            if cls_name == 'User':
                 return self.__session.query(User).filter(User.userId == id).one()
-            elif cls == 'Organisation':
+            elif cls_name == 'Organisation':
                 return self.__session.query(Organisation).filter(Organisation.orgId == id).one()
             else:
                 return None
         except NoResultFound:
             return None
-        finally:
-            self.__session.close()
 
     def get_by_email(self, cls, email):
         """Returns the object based on the class and email"""
@@ -122,3 +124,12 @@ class DBStorage:
                 return value
 
         return None
+
+    def to_dict(self, save_fs=None):
+        """ Return a dict of the current class instance
+        """
+        new_dict = self.__dict__.copy()
+        if save_fs is None:
+            if "password" in new_dict:
+                del new_dict["password"]
+        return new_dict

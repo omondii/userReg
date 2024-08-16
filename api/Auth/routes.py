@@ -72,7 +72,7 @@ def register():
 
             storage.save()
 
-            access_token = generate_token(user.UserId)
+            access_token = generate_token(user.userId)
 
             return jsonify({
                 "status": "success",
@@ -93,7 +93,7 @@ def register():
             storage.rollback()
             return jsonify({
                 "status": "Bad request",
-                "message": "Registration unsuccessful",
+                "message": {e},
                 "statusCode": 400
             }), 400
     return jsonify({
