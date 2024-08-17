@@ -1,5 +1,5 @@
-## User Registration Backend System
-# A simple user registration backend system built using flask, PostgreSQL, SQLAlchemy & JWT
+# User Registration Backend System
+## A simple user registration backend system built using flask, PostgreSQL, SQLAlchemy.
 
 # Features
 1. Account Creation

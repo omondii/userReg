@@ -6,6 +6,7 @@ from api.Routes import api
 from flask_jwt_extended import (create_access_token,
                                 unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
 from api.Models import storage
+import uuid
 
 
 @api.route('/users/all/', methods=['GET'])
@@ -174,9 +175,61 @@ def get_org(orgId):
 @jwt_required()
 def create_org():
     """
-    [POST] /api/organisations : a user can create their new organisation
+    [POST] /api/organisations : a user can create their own new organisation
     :return:
     """
+    current_userId = get_jwt_identity()
+    user = storage.get('User', current_userId)
+
     data = request.get_json()
-    name = data.get('email')
+    name = data.get('name')
     description = data.get('description')
+    if request.method == 'POST':
+        try:
+            name = data.get('name')
+            description = data.get('description')
+
+            if not all([name, description]):
+                return jsonify({
+                    "status": "Missing required param",
+                    "message": "Bad request",
+                    "statusCode": 400
+                }), 400
+
+            # Duplicate data checker
+            existing_org = storage.get_by_orgname(Organisation, name)
+            if existing_org:
+                return jsonify({
+                    "status": "Bad Request",
+                    "message": "Similar Organisation exists",
+                    "statusCode": 400
+                }), 400
+
+            # Create an Organisation instance and save it to db
+            org = Organisation(
+                orgId=str(uuid.uuid4()),
+                name=name,
+                description=description
+            )
+            storage.new(org)
+            storage.save()
+
+            user.organisations.append(org)
+            return jsonify({
+                "status": "success",
+                "message": "Organisation Created succesfully",
+                "statusCode": 200
+            }), 200
+
+        except Exception as e:
+            storage.rollback()
+            return jsonify({
+                "status": "Bad Request",
+                "message": {e},
+                "statusCode": 400
+            }), 400
+    return jsonify({
+        "status": "Bad request",
+        "message": "Invalid request",
+        "statusCode": 401
+    }), 401

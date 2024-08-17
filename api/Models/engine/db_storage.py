@@ -45,7 +45,10 @@ class DBStorage:
             if cls is None or cls is classes[clss] or cls is clss:
                 result = self.__session.query(classes[clss]).all()
                 for x in result:
-                    key = x.__class__.__name__ + '.' + str(x.userId)
+                    if hasattr(x, 'userId'):
+                        key = x.__class__.__name__ + '.' + str(x.userId)
+                    else:
+                        key = x.__class__.__name__ + '+' + str(x.orgId)
                     new_dict[key] = x
         return new_dict
 
@@ -122,7 +125,17 @@ class DBStorage:
         for value in all_cls.values():
             if value.email == email:
                 return value
+        return None
 
+    def get_by_orgname(self, cls, org_name):
+        """ Returns the object based on the organisation name """
+        if cls not in classes.values():
+            return None
+
+        all_objs = self.all(cls)
+        for obj in all_objs.values():
+            if getattr(obj, 'name', None) == org_name:
+                return obj
         return None
 
     def to_dict(self, save_fs=None):
