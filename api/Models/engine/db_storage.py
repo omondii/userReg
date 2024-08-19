@@ -34,6 +34,30 @@ class DBStorage:
         """
         self.__engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
+    def new(self, obj):
+        """
+        Add a new object to the db session
+        :return:
+        """
+        self.__session.add(obj)
+
+    def save(self):
+        """
+        Save current session changes to db
+        :return:
+        """
+        self.__session.commit()
+
+    def reload(self):
+        """
+        Create and manage db sessions
+        :return: a session
+        """
+        Base.metadata.create_all(self.__engine)
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session = scoped_session(session_factory)
+        self.__session = session
+
     def all(self, cls=None):
         """
         Class method to retrieve all items in the db based on class name
@@ -51,30 +75,6 @@ class DBStorage:
                         key = x.__class__.__name__ + '+' + str(x.orgId)
                     new_dict[key] = x
         return new_dict
-
-    def reload(self):
-        """
-        Create and manage db sessions
-        :return: a session
-        """
-        Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        session = scoped_session(session_factory)
-        self.__session = session
-
-    def new(self, obj):
-        """
-        Add a new object to the db session
-        :return:
-        """
-        self.__session.add(obj)
-
-    def save(self):
-        """
-        Save current session changes to db
-        :return:
-        """
-        self.__session.commit()
 
     def delete(self, obj=None):
         """
