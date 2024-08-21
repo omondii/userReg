@@ -3,8 +3,7 @@
 from flask import request, jsonify, g
 from api.Models.tables import User, Organisation
 from api.Routes import api
-from flask_jwt_extended import (create_access_token,
-                                unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
+from flask_jwt_extended import (get_jwt_identity, jwt_required)
 from api.Models import storage
 import uuid
 

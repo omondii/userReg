@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """ Endpoints for authorization """
 import uuid
-
 from flask import request, jsonify
 from api.Auth import auth
 from api.Models import storage

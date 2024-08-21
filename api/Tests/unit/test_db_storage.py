@@ -42,8 +42,6 @@ def cleanup(db_storage):
     Iterate over all tables in the db in reverse to correctly handle the foreign key
     :param db_storage: Current db_storage instance
     """
-
-    yield
     db_storage.close()
     # Retrieve e SQLALCHEMY engine from db_storage object
     engine = db_storage._DBStorage__engine

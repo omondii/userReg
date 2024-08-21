@@ -1,12 +1,12 @@
-#!/usr.bin/env python3
+#!/usr/bin/env python3
 """
-DB storage handles the creation of a the application db,
+DB storage handles the creation of the application db,
 a connection to execute defined methods on db data
 """
 from api.Models.tables import User, Organisation, Base
 from sqlalchemy import create_engine
 import os
-from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 from dotenv import load_dotenv
 from sqlalchemy.orm.exc import NoResultFound
 
