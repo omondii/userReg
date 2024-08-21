@@ -19,9 +19,8 @@ def test_post_user(client, db):
         'password': 'test2',
         'phone': '234788555433'
     })
-    # assert response.status_code == 201
+    assert response.status_code == 201
     data = response.get_json()
-    assert 'data' in data
     assert 'accessToken' in data['data']
     assert data['message'] == 'Registration successful'
 

@@ -28,11 +28,14 @@ class DBStorage:
     __session = None
     __engine = None
 
-    def __init__(self):
+    def __init__(self, db_engine=None):
         """
         Class initiator. Create a connection to the db for every instance
         """
-        self.__engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+        if db_engine:
+            self.__engine = db_engine
+        else:
+            self.__engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
     def new(self, obj):
         """
