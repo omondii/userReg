@@ -7,7 +7,6 @@ import pytest
 from sqlalchemy import create_engine
 from api.Models.engine.db_storage import DBStorage
 from api.Models.tables import User, Organisation, Base
-import contextlib
 
 
 @pytest.fixture(scope='session')
@@ -35,12 +34,7 @@ def db(app, db_engine):
 
     # Clean up the database after each test
     print("Cleaning up database")
-    with contextlib.closing(db_engine.connect()) as con:
-        trans = con.begin()
-        for table in reversed(Base.metadata.sorted_tables):
-            con.execute(table.delete())
-        trans.commit()
-
+    Base.metadata.drop_all(db_engine)
     app.db_storage.rollback()
     app.db_storage.close()
 
@@ -50,3 +44,15 @@ def client(app):
     """ Create a test client for application tests """
     with app.test_client() as testing_client:
         yield testing_client
+
+
+@pytest.fixture(autouse=True, scope='session')
+def cleanup(db_engine):
+    """ Retrieve the SQLAlchemy engine from the db_engine object
+    Create a new connection to the db ensuring it will be properly closed
+    start a new transaction, all following transactions fall under this.
+    Iterate over all tables in the db in reverse to correctly handle the foreign key
+    """
+    # Retrieve e SQLALCHEMY engine from db_engine object
+    Base.metadata.drop_all(db_engine)
+    Base.metadata.create_all(db_engine)

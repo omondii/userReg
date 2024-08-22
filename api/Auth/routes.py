@@ -37,7 +37,7 @@ def register():
             if existing_user:
                 return jsonify({
                     "status": "Bad request",
-                    "message": "Email or phone number already exists",
+                    "message": "User exists!",
                     "statusCode": 400
                 }), 400
 
@@ -113,7 +113,7 @@ def login():
     if not all([email, password]):
         return jsonify({
             "status": "Bad request",
-            "message": "Email and password are required",
+            "message": "Missing required filed/s",
             "statusCode": 400
         }), 400
 
