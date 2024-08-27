@@ -162,7 +162,7 @@ class TestDBstorage:
         objs = db_storage.all()
         assert len(objs) == 2
         assert "User.1" in objs
-        assert "Organisation+2" in objs
+        assert "Organisation.2" in objs
 
     def test_delete(self, db_storage):
         """ Delete function should permanently remove the del object from memory
@@ -230,6 +230,7 @@ class TestDBstorage:
         # Save the instances to DB
         db_storage.new(org)
         db_storage.save()
+        print(f"Number of users in db after Req: {len(db_storage.all(Organisation))}")
 
         # Retrieve organisation by name
         orgx = db_storage.get_by_orgname(Organisation, "Hope Org")

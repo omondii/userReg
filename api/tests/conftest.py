@@ -7,13 +7,24 @@ import pytest
 from sqlalchemy import create_engine
 from api.Models.engine.db_storage import DBStorage
 from api.Models.tables import User, Organisation, Base
+from flask_jwt_extended import JWTManager, create_access_token
 
 
 @pytest.fixture(scope='session')
 def app():
     """ Create a flask app instance """
     app = create_app(config_class='TESTING')
+    app.config['JWT_SECRET-KEY'] = 'test-secrets'
+    JWTManager(app)
     yield app
+
+
+@pytest.fixture(scope='session')
+def access_token(app):
+    """ Generate JWT access token for use in test cases
+    """
+    with app.app_context():
+        return create_access_token(identity='test_user')
 
 
 @pytest.fixture(scope='session')
@@ -29,13 +40,13 @@ def db_engine():
 def db(app, db_engine):
     """ Provide an isolated db session for each test """
     app.db_storage = DBStorage(db_engine=db_engine)
+    Base.metadata.create_all(db_engine)
     app.db_storage.reload()
     yield app.db_storage
 
     # Clean up the database after each test
     print("Cleaning up database")
     Base.metadata.drop_all(db_engine)
-    app.db_storage.rollback()
     app.db_storage.close()
 
 
@@ -46,7 +57,7 @@ def client(app):
         yield testing_client
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True, scope='function')
 def cleanup(db_engine):
     """ Retrieve the SQLAlchemy engine from the db_engine object
     Create a new connection to the db ensuring it will be properly closed

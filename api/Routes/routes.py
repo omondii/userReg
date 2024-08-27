@@ -10,21 +10,21 @@ import uuid
 
 @api.route('/users/all/', methods=['GET'])
 @jwt_required()
-def all_users():
+def get_users():
     """
     Gives the full list of all registered users
     :return: data
     """
-    users = storage.all(User).values()
+    users = storage.all(User)
     if not users:
         return jsonify({
             "status": "Not Found",
-            "Message": "No Data Found",
+            "message": "No Data Found",
             "statusCode": 404
         }), 404
 
     user_list = []
-    for user in users:
+    for user in users.values():
         user_list.append({
             "userId": user.userId,
             "firstName": user.firstName,
@@ -34,12 +34,13 @@ def all_users():
         })
     return jsonify({
         "status": "success",
-        "Message": "Data Retrieved",
+        "message": "Data Retrieved",
+        "statusCode": 200,
         "data": user_list
     }), 200
 
 
-@api.route('/users/<userId>', methods=['GET'])
+@api.route('/user/<userId>', methods=['GET'])
 @jwt_required()
 def get_user(userId):
     """
@@ -124,7 +125,7 @@ def get_orgs():
         }), 500
 
 
-@api.route('/organisations/<orgId>', methods=['GET'])
+@api.route('/organisation/<orgId>', methods=['GET'])
 @jwt_required()
 def get_org(orgId):
     """
@@ -170,15 +171,17 @@ def get_org(orgId):
     }), 200
 
 
-@api.route('/organisations', methods=['POST'])
+@api.route('/organisation', methods=['POST'])
 @jwt_required()
 def create_org():
     """
-    [POST] /api/organisations : a user can create their own new organisation
+    [POST] /api/organisations : a logged-in user can create their own new organisation
     :return:
     """
     current_userId = get_jwt_identity()
-    user = storage.get('User', current_userId)
+    user = storage.get(User, current_userId)
+    if user is None:
+        print('Error')
 
     data = request.get_json()
     name = data.get('name')

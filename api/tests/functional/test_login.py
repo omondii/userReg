@@ -49,8 +49,8 @@ def test_wrong_pass(client, db):
     assert register.status_code == 201
 
     login = client.post(url, json={
-        'email': 'Nomail@gmail.com',
-        'password': 'test2'
+        'email': 'Nmail@gmail.com', # Wrong email/password
+        'password': 'test23'
     })
     assert login.status_code == 401
     data = login.get_json()
@@ -74,8 +74,10 @@ def test_missing_param(client, db):
     })
     assert register.status_code == 201
 
+    # Should fail if request body is !=2
     login = client.post(url, json={
         'email': 'Nomail@gmail.com',
+        # d'password': 'test23' # missing param
     })
     assert login.status_code == 400
     data = login.get_json()

@@ -34,8 +34,10 @@ class DBStorage:
         """
         if db_engine:
             self.__engine = db_engine
+            self.__session = scoped_session(sessionmaker(bind=self.__engine))
         else:
             self.__engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+            self.__session = scoped_session(sessionmaker(bind=self.__engine))
 
     def new(self, obj):
         """
@@ -68,15 +70,20 @@ class DBStorage:
         :return: dict of all class items in db
         """
         new_dict = {}
-        for clss in classes:
-            if cls is None or cls is classes[clss] or cls is clss:
-                result = self.__session.query(classes[clss]).all()
-                for x in result:
-                    if hasattr(x, 'userId'):
-                        key = x.__class__.__name__ + '.' + str(x.userId)
-                    else:
-                        key = x.__class__.__name__ + '+' + str(x.orgId)
-                    new_dict[key] = x
+        if cls:
+            objects = self.__session.query(cls).all()
+        else:
+            objects = self.__session.query(User).all() + self.__session.query(Organisation).all()
+
+        for obj in objects:
+            if isinstance(obj, User):
+                key = f"User.{obj.userId}"
+            elif isinstance(obj, Organisation):
+                key = f"Organisation.{obj.orgId}"
+            else:
+                continue  # Skip if it's neither User nor Organisation
+            new_dict[key] = obj
+
         return new_dict
 
     def delete(self, obj=None):
@@ -135,8 +142,8 @@ class DBStorage:
         if cls not in classes.values():
             return None
 
-        all_objs = self.all(cls)
-        for obj in all_objs.values():
+        all_objs = self.all(cls).values()
+        for obj in all_objs:
             if getattr(obj, 'name', None) == org_name:
                 return obj
         return None

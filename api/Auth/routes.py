@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 """ Endpoints for authorization """
 import uuid
-from flask import request, jsonify
+from flask import request, jsonify, abort
 from api.Auth import auth
 from api.Models import storage
 from api.Auth.utils import generate_token
 from api.Models.tables import User, Organisation
-from flask_jwt_extended import (create_access_token,
-                                unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
 from werkzeug.security import generate_password_hash, check_password_hash
-# from api.app import csrf
+from werkzeug.exceptions import BadRequest, Conflict
 
 
 @auth.route('/register', methods=['POST'])
@@ -36,10 +34,10 @@ def register():
             existing_user = storage.get_by_email(User, email)
             if existing_user:
                 return jsonify({
-                    "status": "Bad request",
-                    "message": "User exists!",
-                    "statusCode": 400
-                }), 400
+                    "status": "Conflict",
+                    "message": "All fields are required",
+                    "statusCode": 409
+                }), 409
 
             # Hash the password
             hashed_password = generate_password_hash(password)
@@ -87,7 +85,6 @@ def register():
                     }
                 }
             }), 201
-
         except Exception as e:
             storage.rollback()
             return jsonify({

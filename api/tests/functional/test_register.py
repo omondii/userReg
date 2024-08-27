@@ -60,6 +60,7 @@ def test_post_same_data(client, db):
         'password': 'testwrong',
         'phone': '254789767644'
     })
+    assert response.status_code == 201
 
     response2 = client.post(url, json={
         'userId': '3',
@@ -69,8 +70,7 @@ def test_post_same_data(client, db):
         'password': 'testwrong',
         'phone': '25478979098'
     })
-    assert response.status_code == 201
-    assert response2.status_code == 400
+    assert response2.status_code == 409
     data = response2.get_json()
-    assert data['status'] == 'Bad request'
-    assert data['message'] == 'User exists!'
+    assert data['status'] == 'Conflict'
+    assert data['message'] == 'All fields are required'

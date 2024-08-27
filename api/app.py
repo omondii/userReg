@@ -27,6 +27,9 @@ def create_app(config_class=Config, db_engine=None):
     app.db_storage = DBStorage(db_engine=db_engine)
     app.db_storage.reload()
 
+    from api.errors import errors
+    app.register_blueprint(errors)
+
     from api.Auth import auth
     app.register_blueprint(auth)
 
