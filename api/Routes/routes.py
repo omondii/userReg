@@ -47,17 +47,14 @@ def get_user(userId):
         [GET] /api/users/:id : a user gets their own record or user
         record in organisations they belong to or created [PROTECTED].
     :param userId: Logged-in users' id
-    :return:
-    """
     current_userId = get_jwt_identity()
 
     if userId != current_userId:
-        print(current_userId)
         return jsonify({
             "status": "Bad Request",
             "message": "Invalid Id",
             "statusCode": 401
-        }), 401
+        }), 401 """
 
     user = storage.get(User, userId)
     if not user:
@@ -77,7 +74,8 @@ def get_user(userId):
     return jsonify({
         "status": "success",
         "message": "User record retrieved",
-        "data": data
+        "data": data,
+        "statusCode": 200
     }), 200
 
 

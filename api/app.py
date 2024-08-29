@@ -2,16 +2,14 @@
 """
 A simple user authentication application built in python and postgresql
 """
-import os
 
-from flask import Flask
+from flask import Flask, jsonify
 from .config import Config
 from flask_cors import CORS
 # from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import JWTManager
 from api.Models.engine.db_storage import DBStorage
-
-# csrf = CSRFProtect()
+from Utils.errors import handle_exception
 
 
 def create_app(config_class=Config, db_engine=None):
@@ -27,7 +25,7 @@ def create_app(config_class=Config, db_engine=None):
     app.db_storage = DBStorage(db_engine=db_engine)
     app.db_storage.reload()
 
-    from api.errors import errors
+    from api.Utils import errors
     app.register_blueprint(errors)
 
     from api.Auth import auth
@@ -35,5 +33,9 @@ def create_app(config_class=Config, db_engine=None):
 
     from api.Routes import api
     app.register_blueprint(api)
+
+    @app.errorhandler(Exception)
+    def global_error_handler(e):
+        return handle_exception(e)
 
     return app

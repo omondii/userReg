@@ -73,4 +73,4 @@ def test_post_same_data(client, db):
     assert response2.status_code == 409
     data = response2.get_json()
     assert data['status'] == 'Conflict'
-    assert data['message'] == 'All fields are required'
+    assert data['message'] == 'User Exists!'

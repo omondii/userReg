@@ -35,7 +35,7 @@ def register():
             if existing_user:
                 return jsonify({
                     "status": "Conflict",
-                    "message": "All fields are required",
+                    "message": "User Exists!",
                     "statusCode": 409
                 }), 409
 
@@ -143,3 +143,8 @@ def login():
             "statusCode": 401
         }
         return jsonify(response), 401
+
+
+@auth.route('/logout', methods=['POST'])
+def logout():
+    pass
