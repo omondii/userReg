@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
 Test cases for the get_user function.
+FIXTURES:
+Client: Test client
+db: DB test object
+access_token: JWT protected test object
+reg_user:
 """
 
 

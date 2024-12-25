@@ -8,6 +8,7 @@ from api.Auth.utils import generate_token
 from api.Models.tables import User, Organisation
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.exceptions import BadRequest, Conflict
+from flask_jwt_extended import jwt_required
 
 
 @auth.route('/register', methods=['POST'])
@@ -146,5 +147,6 @@ def login():
 
 
 @auth.route('/logout', methods=['POST'])
+@jwt_required()
 def logout():
     pass

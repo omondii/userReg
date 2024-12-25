@@ -7,7 +7,7 @@ import pytest
 url = '/api/users/all/'
 
 
-@pytest.mark.skip(reason="This test is currently failing")
+# @pytest.mark.skip(reason="This test is currently failing")
 def test_get_no_users(client, db, access_token):
     """
     GIVEN: an api configured for testing

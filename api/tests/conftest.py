@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Configuration file for all tests
+Pytest fixture functions for start-up and clean-up
 """
 from api.app import create_app
 import pytest
@@ -12,17 +13,16 @@ from flask_jwt_extended import JWTManager, create_access_token
 
 @pytest.fixture(scope='session')
 def app():
-    """ Create a flask app instance """
+    """ Create a flask app test instance """
     app = create_app(config_class='TESTING')
-    app.config['JWT_SECRET-KEY'] = 'test-secrets'
+    app.config['JWT_SECRET-KEY'] = 'grsyhryhtgr6yhrgtju6644'
     JWTManager(app)
     yield app
 
 
 @pytest.fixture(scope='session')
 def db_engine():
-    """ Define a DB instance specifically for test purposes
-    """
+    """ Instantiate a DB instance specifically for testing """
     engine = create_engine('sqlite:///:memory:')
     yield engine
     engine.dispose()
@@ -44,15 +44,14 @@ def db(app, db_engine):
 
 @pytest.fixture(scope='session')
 def access_token(app):
-    """ Generate JWT access token for use in test cases
-    """
+    """ Generate JWT access token for use in test cases """
     with app.app_context():
         return create_access_token(identity='test_user')
 
 
 @pytest.fixture(scope='function')
 def client(app):
-    """ Create a test client for application tests """
+    """ Create a test client for SUT """
     with app.test_client() as testing_client:
         yield testing_client
 
