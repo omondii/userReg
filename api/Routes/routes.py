@@ -1,11 +1,46 @@
 #!/usr/bin/env python3
 """ application endpoints """
+import os
 from flask import request, jsonify, g
 from api.Models.tables import User, Organisation
 from api.Routes import api
 from flask_jwt_extended import (get_jwt_identity, jwt_required)
 from api.Models import storage
 import uuid
+from flasgger import swag_from
+
+
+@api.route('/user/<userId>', methods=['GET'])
+@jwt_required()
+@swag_from('../specs/get_user.yml')
+def get_user(userId):
+    """
+    [GET] /api/users/:id : a user gets their own record or user
+    record in organisations they belong to or created [PROTECTED].
+    :param userId: Logged-in users' id
+    current_userId = get_jwt_identity()
+    """
+    user = storage.get(User, userId)
+    if not user:
+        return jsonify({
+            "status": "Bad Request",
+            "message": "User Not Found",
+            "statusCode": 404
+        }), 404
+
+    data = {
+        "userId": user.userId,
+        "firstName": user.firstName,
+        "lastName": user.lastName,
+        "email": user.email,
+        "phone": user.phone
+    }
+    return jsonify({
+        "status": "success",
+        "message": "User record retrieved",
+        "data": data,
+        "statusCode": 200
+    }), 200
 
 
 @api.route('/users/all/', methods=['GET'])
@@ -37,45 +72,6 @@ def get_users():
         "message": "Data Retrieved",
         "statusCode": 200,
         "data": user_list
-    }), 200
-
-
-@api.route('/user/<userId>', methods=['GET'])
-@jwt_required()
-def get_user(userId):
-    """
-        [GET] /api/users/:id : a user gets their own record or user
-        record in organisations they belong to or created [PROTECTED].
-    :param userId: Logged-in users' id
-    current_userId = get_jwt_identity()
-
-    if userId != current_userId:
-        return jsonify({
-            "status": "Bad Request",
-            "message": "Invalid Id",
-            "statusCode": 401
-        }), 401 """
-
-    user = storage.get(User, userId)
-    if not user:
-        return jsonify({
-            "status": "Bad Request",
-            "message": "User Not Found",
-            "statusCode": 404
-        }), 404
-
-    data = {
-        "userId": user.userId,
-        "firstName": user.firstName,
-        "lastName": user.lastName,
-        "email": user.email,
-        "phone": user.phone
-    }
-    return jsonify({
-        "status": "success",
-        "message": "User record retrieved",
-        "data": data,
-        "statusCode": 200
     }), 200
 
 

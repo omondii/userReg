@@ -1,0 +1,51 @@
+tags:
+  - User
+parameters:
+  - name: userId
+    in: path
+    required: true
+    type: string
+    description: A user's unique identifier
+responses:
+  200:
+    description: User record retrieved successfully
+    schema:
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: User record retrieved
+        data:
+          type: object
+          properties:
+            userId:
+              type: string
+            firstName:
+              type: string
+            lastName:
+              type: string
+            email:
+              type: string
+            phone:
+              type: string
+        statusCode:
+          type: integer
+          example: 200
+  404:
+    description: User not found
+    schema:
+      properties:
+        status:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: User Not FOund
+        statusCode:
+          type: integer
+          example: 404
+
+ 
+      

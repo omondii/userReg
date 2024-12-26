@@ -1,0 +1,48 @@
+tags:
+  - User
+parameters:
+  - name: email
+    in: query
+    required: true
+    type: string
+    description: A registered User's email address
+  - name: password
+    in: query
+    required: true
+    type: string
+    description: Users' account password
+responses:
+  200:
+    description: Logged In!
+    schema:
+      properties:
+        status:
+          type: string
+          example: Success
+        message:
+          type: string
+          example: Login Successful
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: access_token
+            user:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: user.userId
+                firstname:
+                  type: string
+                  example: user.firstName
+                lastname:
+                  type: string
+                  example: user.lastName
+                email:
+                  type: string
+                  example: user.email
+                phone:
+                  type: string
+                  example: user.phone

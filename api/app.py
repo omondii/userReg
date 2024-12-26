@@ -7,6 +7,7 @@ from .config import Config
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from api.Models.engine.db_storage import DBStorage
+from flasgger import Swagger
 
 
 def create_app(config_class=Config, db_engine=None):
@@ -17,6 +18,7 @@ def create_app(config_class=Config, db_engine=None):
     CORS(app)
     app.config.from_object(Config)
     JWTManager(app)
+    Swagger(app)
 
     # Initialize db storage
     app.db_storage = DBStorage(db_engine=db_engine)

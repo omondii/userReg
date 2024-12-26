@@ -9,9 +9,11 @@ from api.Models.tables import User, Organisation
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.exceptions import BadRequest, Conflict
 from flask_jwt_extended import jwt_required
+from flasgger import swag_from
 
 
 @auth.route('/register', methods=['POST'])
+@swag_from('../specs/register_user.yml')
 def register():
     """ View to add a new user to db after data validation"""
     data = request.get_json()
@@ -75,6 +77,7 @@ def register():
             return jsonify({
                 "status": "success",
                 "message": "Registration successful",
+                "statusCode": 201,
                 "data": {
                     "accessToken": access_token,
                     "user": {
@@ -101,6 +104,7 @@ def register():
 
 
 @auth.route('/login', methods=['POST'])
+@swag_from('../specs/login_user.yml')
 def login():
     """ Logs a user based on provided details """
     data = request.get_json()
@@ -122,9 +126,10 @@ def login():
         # Create a new access token
         access_token = generate_token(user.userId)
 
-        response = {
+        return jsonify({
             "status": "success",
             "message": "Login successful",
+            "statusCode": 200,
             "data": {
                 "accessToken": access_token,
                 "user": {
@@ -135,16 +140,13 @@ def login():
                     "phone": user.phone
                 }
             }
-        }
-        return jsonify(response), 200
+        }), 200
     else:
-        response = {
+        return jsonify({
             "status": "Bad request",
             "message": "Authentication failed",
             "statusCode": 401
-        }
-        return jsonify(response), 401
-
+        }), 401
 
 @auth.route('/logout', methods=['POST'])
 @jwt_required()

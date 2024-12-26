@@ -1,0 +1,95 @@
+tags:
+  - User
+parameters:
+  - name: firstname
+    in: path
+    required: true
+    type: string
+    description: Enter your first name
+  - name: lastname
+    in: path
+    required: true
+    type: string
+    description: Enter your first name
+  - name: email
+    in: path
+    required: true
+    type: string
+    description: Enter email
+  - name: password
+    in: path
+    required: true
+    type: string
+    description: Enter password
+  - name: phone
+    in: path
+    required: true
+    type: int
+    description: Phone number
+responses:
+  201:
+    description: User Registered Successfully
+    schema:
+      properties:
+        status:
+          type: string
+          example: Success
+        message:
+          type: string
+          example: Registration Successful
+        data:
+          type: object
+          properties:
+            userId:
+              type: string
+            firstname:
+              type: string
+            lastname:
+              type: string
+            email:
+              type: string
+            phone:
+              type: integer
+        statusCode:
+          type: integer
+          example: 201
+  400:
+    description: Missing Field/s
+    schema:
+      status:
+        type: string
+        example: Bad Request
+      message:
+        type: string
+        example: All fields are required for registration.
+      statusCode:
+        type: integer
+        example: 400
+  401:
+    description: Invalid Request
+    schema:
+      properties:
+        status:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: Invalid Request
+        statusCode:
+          type: integer
+          example: 401
+  409:
+    description: Existing Data
+    schema:
+      properties:
+        status:
+          type: string
+          example: "Conflict"
+        message:
+          type: string
+          example: "User already exists!"
+        statusCode:
+          type: integer
+          example: 409
+
+
