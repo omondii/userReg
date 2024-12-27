@@ -45,6 +45,7 @@ def get_user(userId):
 
 @api.route('/users/all/', methods=['GET'])
 @jwt_required()
+@swag_from('../specs/get_allusers.yml')
 def get_users():
     """
     Gives the full list of all registered users
@@ -77,6 +78,7 @@ def get_users():
 
 @api.route('/organisations', methods=['GET'])
 @jwt_required()
+@swag_from('../specs/get_allOrgs.yml')
 def get_orgs():
     """
     [GET] /api/organisations : gets all your organisations the user
@@ -88,7 +90,7 @@ def get_orgs():
 
     try:
         user = storage.get('User', current_userId)
-        print(f"User Object: {user}")
+        # print(f"User Object: {user}")
         if not user:
             return jsonify({
                 "status": "Error",
