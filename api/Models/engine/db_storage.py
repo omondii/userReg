@@ -100,9 +100,11 @@ class DBStorage:
         try:
             # Use the class parameter to determine which table to query
             if cls == 'User':
-                return self.__session.query(User).filter(User.userId == id).one()
+                return self.__session.query(User).filter
+                (User.userId == id).one()
             elif cls == 'Organisation':
-                return self.__session.query(Organisation).filter(Organisation.orgId == id).one()
+                return self.__session.query(Organisation).filter
+                (Organisation.orgId == id).one()
             else:
                 return None
         except NoResultFound:
@@ -121,3 +123,4 @@ class DBStorage:
                 return value
 
         return None
+

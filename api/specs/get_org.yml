@@ -1,0 +1,42 @@
+tags:
+  - Organization
+parameters:
+  - name: orgId
+    in: path
+    required: true
+    type: string
+    description: An existing organizations' Unique identifier
+responses:
+  200:
+    description: Organization Details Retrieved
+    schema:
+      properties:
+        status:
+          type: string
+          example: Success
+        message:
+          type: string
+          example: Organisations retrieved successfully
+        data:
+          type: array
+          properties:
+            orgId:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+  404:
+    description: Object Not Found
+    schema:
+      properties:
+        status:
+          type: string
+          example: Failed to Retrieve object
+        message:
+          type: string
+          example: User Not Found
+        statusCode:
+          type: string
+          example: 404
+

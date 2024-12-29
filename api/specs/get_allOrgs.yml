@@ -1,0 +1,53 @@
+tags:
+  - Organization
+responses:
+  200:
+    description: Data Retrieved Successfully
+    schema:
+      properties:
+        status:
+          type: string
+          example: Success
+        message:
+          type: string
+          example: All User organizations returned successfully
+        statusCode:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              OrgId:
+                type: integer
+              name:
+                type: string
+              description:
+                type: string
+  404:
+    description: User Does not exist
+    schema:
+      properties:
+        status:
+          type: string
+          example: Error
+        message:
+          type: string
+          example: User Not Found
+        statusCode:
+          type: integer
+          example: 404
+  500:
+    description: An Unknown Error occurred
+    schema:
+      properties:
+        status: 
+          type: string
+          example: Error
+        message:
+          type: string
+          example: An error occurred
+        statusCode:
+          type: integer
+          example: 500

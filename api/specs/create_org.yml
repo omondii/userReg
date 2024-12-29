@@ -1,0 +1,41 @@
+tags:
+  - Organization
+parameters:
+  - name: name
+    in: query
+    required: true
+    type: string
+    description: An organization name
+  - name: description
+    in: query
+    required: true
+    type: string
+    description: A brief description of the organisation
+responses:
+  '201':
+    description: Successfully created Organisation
+    schema:
+      properties:
+        status:
+          type: string
+          example: Success
+        message:
+          type: string
+          example: Organization Created Successfully
+        statusCode:
+          type: integer
+          example: 201
+  '400':
+    description: Duplicate Data
+    schema:
+      properties:
+        status:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: Missing a required Parameter
+        statusCode:
+          type: integer
+          example: 400
+

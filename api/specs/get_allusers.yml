@@ -1,0 +1,44 @@
+tags:
+  - User
+responses:
+  200:
+    description: Successfully Retrieved all Users data
+    schema:
+      properties:
+        status:
+          type: string
+          example: Success
+        message:
+          type: string
+          example: Data Retrieved
+        statusCode:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              phone:
+                type: string
+  404:
+    description: No users found
+    schema:
+      properties:
+        status:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: No Data Found
+        statusCode:
+          type: integer
+          example: 404

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """ Endpoints for authorization """
 import uuid
-
-from flask import request, jsonify
-from Auth import auth
-from Models import storage
-# from api.Auth.forms import RegistrationForm
-from Models.tables import User, Organisation
-from flask_jwt_extended import (create_access_token,
-                                unset_jwt_cookies, get_jwt, get_jwt_identity, jwt_required)
+from flask import request, jsonify, abort
+from api.Auth import auth
+from api.Models import storage
+from api.Auth.utils import generate_token
+from api.Models.tables import User, Organisation
 from werkzeug.security import generate_password_hash, check_password_hash
-# from api.app import csrf
+from werkzeug.exceptions import BadRequest, Conflict
+from flask_jwt_extended import jwt_required
+from flasgger import swag_from
 
 
 @auth.route('/register', methods=['POST'])
+@swag_from('../specs/register_user.yml')
 def register():
     """ View to add a new user to db after data validation"""
     data = request.get_json()
@@ -37,10 +37,10 @@ def register():
             existing_user = storage.get_by_email(User, email)
             if existing_user:
                 return jsonify({
-                    "status": "Bad request",
-                    "message": "Email or phone number already exists",
-                    "statusCode": 400
-                }), 400
+                    "status": "Conflict",
+                    "message": "User Exists!",
+                    "statusCode": 409
+                }), 409
 
             # Hash the password
             hashed_password = generate_password_hash(password)
@@ -66,14 +66,18 @@ def register():
             # Add user and organisation to the session and commit
             storage.new(user)
             storage.new(organisation)
+
+            # create association table
+            user.organisations.append(organisation)
+
             storage.save()
 
-            # Create an access token for the new user
-            access_token = create_access_token(identity=user.userId)
+            access_token = generate_token(user.userId)
 
             return jsonify({
                 "status": "success",
                 "message": "Registration successful",
+                "statusCode": 201,
                 "data": {
                     "accessToken": access_token,
                     "user": {
@@ -85,17 +89,11 @@ def register():
                     }
                 }
             }), 201
-
         except Exception as e:
             storage.rollback()
-            # Log the exception details for debugging
-            print(f"Exception during registration: {str(e)}")
-            import traceback
-            traceback.print_exc()
-
             return jsonify({
                 "status": "Bad request",
-                "message": "Registration unsuccessful",
+                "message": {e},
                 "statusCode": 400
             }), 400
     return jsonify({
@@ -106,6 +104,7 @@ def register():
 
 
 @auth.route('/login', methods=['POST'])
+@swag_from('../specs/login_user.yml')
 def login():
     """ Logs a user based on provided details """
     data = request.get_json()
@@ -116,7 +115,7 @@ def login():
     if not all([email, password]):
         return jsonify({
             "status": "Bad request",
-            "message": "Email and password are required",
+            "message": "Missing required filed/s",
             "statusCode": 400
         }), 400
 
@@ -125,11 +124,12 @@ def login():
 
     if user and check_password_hash(user.password, password):
         # Create a new access token
-        access_token = create_access_token(identity=user.userId)
+        access_token = generate_token(user.userId)
 
-        response = {
+        return jsonify({
             "status": "success",
             "message": "Login successful",
+            "statusCode": 200,
             "data": {
                 "accessToken": access_token,
                 "user": {
@@ -140,12 +140,17 @@ def login():
                     "phone": user.phone
                 }
             }
-        }
-        return jsonify(response), 200
+        }), 200
     else:
-        response = {
+        return jsonify({
             "status": "Bad request",
             "message": "Authentication failed",
             "statusCode": 401
-        }
-        return jsonify(response), 401
+        }), 401
+
+@auth.route('/logout', methods=['POST'])
+@jwt_required()
+@swag_from('../specs/logout.yml')
+def logout():
+    pass
+
