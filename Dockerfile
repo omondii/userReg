@@ -2,7 +2,7 @@
 FROM python:3.9-alpine
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /app/api
 
 # Copy the rest of your application code into the container
 COPY . /app

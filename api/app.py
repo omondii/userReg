@@ -6,8 +6,9 @@ from flask import Flask
 from config import Config
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from api.Models.engine.db_storage import DBStorage
+from Models.engine.db_storage import DBStorage
 from flasgger import Swagger
+import os
 
 
 def create_app(config_class=Config, db_engine=None):
@@ -25,10 +26,10 @@ def create_app(config_class=Config, db_engine=None):
     app.db_storage = DBStorage(db_engine=db_engine)
     app.db_storage.reload()
 
-    from api.Auth import auth
+    from Auth import auth
     app.register_blueprint(auth)
 
-    from api.Routes import api
+    from Routes import api
     app.register_blueprint(api)
 
     return app

@@ -2,10 +2,10 @@
 """ Endpoints for authorization """
 import uuid
 from flask import request, jsonify, abort
-from api.Auth import auth
-from api.Models import storage
-from api.Auth.utils import generate_token
-from api.Models.tables import User, Organisation
+from Auth import auth
+from Models import storage
+from Auth.utils import generate_token
+from Models.tables import User, Organisation
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.exceptions import BadRequest, Conflict
 from flask_jwt_extended import jwt_required
