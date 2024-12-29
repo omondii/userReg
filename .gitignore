@@ -1,6 +1,8 @@
 venv
 .idea
+.vscode
 .env
 __pycache__
 Utils
 test_app.py
+
