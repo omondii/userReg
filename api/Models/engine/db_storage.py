@@ -1,12 +1,12 @@
-#!/usr.bin/env python3
+#!/usr/bin/env python3
 """
-DB storage handles the creation of a the application db,
+DB storage handles the creation of the application db,
 a connection to execute defined methods on db data
 """
 from Models.tables import User, Organisation, Base
 from sqlalchemy import create_engine
 import os
-from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 from dotenv import load_dotenv
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -27,36 +27,16 @@ class DBStorage:
     __session = None
     __engine = None
 
-    def __init__(self):
+    def __init__(self, db_engine=None):
         """
-        Class initiator. Create connection to the db
+        Class initiator. Create a connection to the db for every instance
         """
-        self.__engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-
-    def all(self, cls=None):
-        """
-        Class method to retrieve all items in the db based on class name
-        :param cls: classname == A db table
-        :return: dict of all class items in db
-        """
-        new_dict = {}
-        for clss in classes:
-            if cls is None or cls is classes[clss] or cls is clss:
-                result = self.__session.query(classes[clss]).all()
-                for x in result:
-                    key = x.__class__.__name__ + '.' + str(x.userId)
-                    new_dict[key] = x
-        return new_dict
-
-    def reload(self):
-        """
-        Create and manage db sessions
-        :return: a session
-        """
-        Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        session = scoped_session(session_factory)
-        self.__session = session
+        if db_engine:
+            self.__engine = db_engine
+            self.__session = scoped_session(sessionmaker(bind=self.__engine))
+        else:
+            self.__engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+            self.__session = scoped_session(sessionmaker(bind=self.__engine))
 
     def new(self, obj):
         """
@@ -71,6 +51,39 @@ class DBStorage:
         :return:
         """
         self.__session.commit()
+
+    def reload(self):
+        """
+        Create and manage db sessions
+        :return: a session
+        """
+        Base.metadata.create_all(self.__engine)
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session = scoped_session(session_factory)
+        self.__session = session
+
+    def all(self, cls=None):
+        """
+        Class method to retrieve all items in the db based on class name
+        :param cls: classname == A db table
+        :return: dict of all class items in db
+        """
+        new_dict = {}
+        if cls:
+            objects = self.__session.query(cls).all()
+        else:
+            objects = self.__session.query(User).all() + self.__session.query(Organisation).all()
+
+        for obj in objects:
+            if isinstance(obj, User):
+                key = f"User.{obj.userId}"
+            elif isinstance(obj, Organisation):
+                key = f"Organisation.{obj.orgId}"
+            else:
+                continue  # Skip if it's neither User nor Organisation
+            new_dict[key] = obj
+
+        return new_dict
 
     def delete(self, obj=None):
         """
@@ -98,19 +111,19 @@ class DBStorage:
     def get(self, cls, id):
         """ Returns the object based on the class name and its ID """
         try:
-            # Use the class parameter to determine which table to query
-            if cls == 'User':
-                return self.__session.query(User).filter
-                (User.userId == id).one()
-            elif cls == 'Organisation':
-                return self.__session.query(Organisation).filter
-                (Organisation.orgId == id).one()
+            if isinstance(cls, str):
+                cls_name = cls
+            else:
+                cls_name = cls.__name__
+
+            if cls_name == 'User':
+                return self.__session.query(User).filter(User.userId == id).one()
+            elif cls_name == 'Organisation':
+                return self.__session.query(Organisation).filter(Organisation.orgId == id).one()
             else:
                 return None
         except NoResultFound:
             return None
-        finally:
-            self.__session.close()
 
     def get_by_email(self, cls, email):
         """Returns the object based on the class and email"""
@@ -121,6 +134,25 @@ class DBStorage:
         for value in all_cls.values():
             if value.email == email:
                 return value
-
         return None
+
+    def get_by_orgname(self, cls, org_name):
+        """ Returns the object based on the organisation name """
+        if cls not in classes.values():
+            return None
+
+        all_objs = self.all(cls).values()
+        for obj in all_objs:
+            if getattr(obj, 'name', None) == org_name:
+                return obj
+        return None
+
+    def to_dict(self, save_fs=None):
+        """ Return a dict of the current class instance
+        """
+        new_dict = self.__dict__.copy()
+        if save_fs is None:
+            if "password" in new_dict:
+                del new_dict["password"]
+        return new_dict
 

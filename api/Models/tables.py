@@ -4,7 +4,7 @@ Database schema definition for user authentication
 """
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func, Table
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
