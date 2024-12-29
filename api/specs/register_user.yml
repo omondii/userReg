@@ -1,28 +1,28 @@
 tags:
-  - User
+  - Profile
 parameters:
   - name: firstname
-    in: path
+    in: query
     required: true
     type: string
     description: Enter your first name
   - name: lastname
-    in: path
+    in: pathquery
     required: true
     type: string
     description: Enter your first name
   - name: email
-    in: path
+    in: query
     required: true
     type: string
     description: Enter email
   - name: password
-    in: path
+    in: query
     required: true
     type: string
     description: Enter password
   - name: phone
-    in: path
+    in: query
     required: true
     type: int
     description: Phone number
@@ -91,5 +91,4 @@ responses:
         statusCode:
           type: integer
           example: 409
-
 

@@ -150,5 +150,7 @@ def login():
 
 @auth.route('/logout', methods=['POST'])
 @jwt_required()
+@swag_from('../specs/logout.yml')
 def logout():
     pass
+

@@ -123,6 +123,7 @@ def get_orgs():
 
 @api.route('/organisation/<orgId>', methods=['GET'])
 @jwt_required()
+@swag_from('../specs/get_org.yml')
 def get_org(orgId):
     """
     [GET] /api/organisations/:orgId the logged-in user gets a single organisation record
@@ -169,6 +170,7 @@ def get_org(orgId):
 
 @api.route('/organisation', methods=['POST'])
 @jwt_required()
+@swag_from('../specs/create_org.yml')
 def create_org():
     """
     [POST] /api/organisations : a logged-in user can create their own new organisation
@@ -216,8 +218,8 @@ def create_org():
             return jsonify({
                 "status": "success",
                 "message": "Organisation Created succesfully",
-                "statusCode": 200
-            }), 200
+                "statusCode": 201
+            }), 201
 
         except Exception as e:
             storage.rollback()
@@ -231,3 +233,4 @@ def create_org():
         "message": "Invalid request",
         "statusCode": 401
     }), 401
+
