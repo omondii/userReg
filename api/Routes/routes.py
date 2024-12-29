@@ -126,7 +126,7 @@ def get_orgs():
 @swag_from('../specs/get_org.yml')
 def get_org(orgId):
     """
-    [GET] /api/organisations/:orgId the logged-in user gets a single organisation record
+    @get_org: the logged-in user gets a single organisation record
     :param orgId: organisation id to retrieve
     :return: payload containing the org data
     """
