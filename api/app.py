@@ -8,6 +8,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from api.Models.engine.db_storage import DBStorage
 from flasgger import Swagger
+import os
+import logging
 
 
 def create_app(config_class=Config, db_engine=None):
@@ -20,12 +22,19 @@ def create_app(config_class=Config, db_engine=None):
     JWTManager(app)
     Swagger(app)
 
+    """ Logging configuration
+    Override Flasks default logger, use Config def
+    """
+    logDir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', 'logs')
+    Config.logging(logDir)
+    logger = logging.getLogger('app')
+    # Logger Test
+    logger.info("User Registration System Starting....")
+
     # Initialize db storage
     app.db_storage = DBStorage(db_engine=db_engine)
     app.db_storage.reload()
 
-    from api.Utils import errors
-    app.register_blueprint(errors)
 
     from api.Auth import auth
     app.register_blueprint(auth)

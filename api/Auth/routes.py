@@ -2,7 +2,7 @@
 """ Endpoints for authorization """
 import uuid
 from flask import request, jsonify, abort
-from api.Auth import auth
+from api.Auth import auth, logger
 from api.Models import storage
 from api.Auth.utils import generate_token
 from api.Models.tables import User, Organisation
@@ -27,6 +27,7 @@ def register():
 
             # Validate the input data
             if not all([firstName, lastName, email, password, phone]):
+                logger.info('Failed to register user. Incomplete Details')
                 return jsonify({
                     "status": "Bad request",
                     "message": "All fields are required",
@@ -36,6 +37,7 @@ def register():
             # Check for duplicate data in db
             existing_user = storage.get_by_email(User, email)
             if existing_user:
+                logger.info(f'Existing user of ID: {User.userId} creation attempt')
                 return jsonify({
                     "status": "Conflict",
                     "message": "User Exists!",
@@ -66,6 +68,7 @@ def register():
             # Add user and organisation to the session and commit
             storage.new(user)
             storage.new(organisation)
+            logger.info(f'User: {user.userId} of Organization: {organisation.name} Created')
 
             # create association table
             user.organisations.append(organisation)
@@ -91,9 +94,10 @@ def register():
             }), 201
         except Exception as e:
             storage.rollback()
+            logger.debug(f'Error: {str(e)}')
             return jsonify({
                 "status": "Bad request",
-                "message": {e},
+                "message": {str(e)},
                 "statusCode": 400
             }), 400
     return jsonify({
@@ -125,6 +129,7 @@ def login():
     if user and check_password_hash(user.password, password):
         # Create a new access token
         access_token = generate_token(user.userId)
+        logger.debug(f'User: {user.userId} Logged In succesfully')
 
         return jsonify({
             "status": "success",

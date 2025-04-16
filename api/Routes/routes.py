@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """ application endpoints """
 import os
-from flask import request, jsonify, g
+from flask import request, jsonify, current_app
 from api.Models.tables import User, Organisation
-from api.Routes import api
+from api.Routes import api, logger
 from flask_jwt_extended import (get_jwt_identity, jwt_required)
 from api.Models import storage
 import uuid
@@ -20,27 +20,39 @@ def get_user(userId):
     :param userId: Logged-in users' id
     current_userId = get_jwt_identity()
     """
-    user = storage.get(User, userId)
-    if not user:
-        return jsonify({
-            "status": "Bad Request",
-            "message": "User Not Found",
-            "statusCode": 404
-        }), 404
+    try:
+        user = storage.get(User, userId)
 
-    data = {
-        "userId": user.userId,
-        "firstName": user.firstName,
-        "lastName": user.lastName,
-        "email": user.email,
-        "phone": user.phone
-    }
-    return jsonify({
-        "status": "success",
-        "message": "User record retrieved",
-        "data": data,
-        "statusCode": 200
-    }), 200
+        if not user:
+            logger.info(f'User: {userId} Not found')
+            return jsonify({
+                "status": "Bad Request",
+                "message": "User Not Found",
+                "statusCode": 404
+            }), 404
+        
+
+        data = {
+            "userId": user.userId,
+            "firstName": user.firstName,
+            "lastName": user.lastName,
+            "email": user.email,
+            "phone": user.phone
+        }
+        return jsonify({
+            "status": "success",
+            "message": "User record retrieved",
+            "data": data,
+            "statusCode": 200
+        }), 200
+    except Exception as e:
+        logger.debug(f'Error: {str(e)}')
+        return jsonify({
+                "status": "Bad Request",
+                "message": "User Not Found",
+                "statusCode": 404
+            }), 404
+
 
 
 @api.route('/users/all/', methods=['GET'])
@@ -51,30 +63,37 @@ def get_users():
     Gives the full list of all registered users
     :return: data
     """
-    users = storage.all(User)
-    if not users:
+    try:
+        users = storage.all(User)
+        if not users:
+            return jsonify({
+                "status": "Not Found",
+                "message": "No Data Found",
+                "statusCode": 404
+            }), 404
+
+        user_list = []
+        for user in users.values():
+            user_list.append({
+                "userId": user.userId,
+                "firstName": user.firstName,
+                "lastName": user.lastName,
+                "email": user.email,
+                "phone": user.phone
+            })
         return jsonify({
-            "status": "Not Found",
-            "message": "No Data Found",
-            "statusCode": 404
-        }), 404
-
-    user_list = []
-    for user in users.values():
-        user_list.append({
-            "userId": user.userId,
-            "firstName": user.firstName,
-            "lastName": user.lastName,
-            "email": user.email,
-            "phone": user.phone
-        })
-    return jsonify({
-        "status": "success",
-        "message": "Data Retrieved",
-        "statusCode": 200,
-        "data": user_list
-    }), 200
-
+            "status": "success",
+            "message": "Data Retrieved",
+            "statusCode": 200,
+            "data": user_list
+        }), 200
+    except Exception as e:
+        logger.debug(f'Error: {str(e)}')
+        return jsonify({
+                "status": "Not Found",
+                "message": "No Data Found",
+                "statusCode": 404
+            }), 404
 
 @api.route('/organisations', methods=['GET'])
 @jwt_required()
@@ -85,12 +104,11 @@ def get_orgs():
     belongs to or created. If a user is logged in properly, they can get all their organisations
     :return: List of all current_user orgs
     """
-    current_userId = get_jwt_identity()
-    print(f"Current User Id: {current_userId}")
-
     try:
+        current_userId = get_jwt_identity()
+        logger.info(f'Current User: {current_userId}')
+
         user = storage.get('User', current_userId)
-        # print(f"User Object: {user}")
         if not user:
             return jsonify({
                 "status": "Error",
@@ -99,7 +117,7 @@ def get_orgs():
             }), 404
 
         orgs = user.organisations
-        print(f"User's Orgs: {orgs}")
+        logger.info(f"User's Orgs: {orgs}")
 
         org_data = [{
             "orgId": org.orgId,
@@ -113,11 +131,11 @@ def get_orgs():
             "data": org_data
         }), 200
     except Exception as e:
-        print(f"Error: {str(e)}")
+        logger.debug(f"Error: {str(e)}")
         return jsonify({
             "status": "Error",
-            "message": f"An error occurred: {str(e)}",
-            "statCode": 500
+            "message": "Something Went Wrong, Don't Fret We'll be right back",
+            "statusCode": 500
         }), 500
 
 
@@ -217,7 +235,7 @@ def create_org():
             user.organisations.append(org)
             return jsonify({
                 "status": "success",
-                "message": "Organisation Created succesfully",
+                "message": "Organisation Created successfully",
                 "statusCode": 201
             }), 201
 
