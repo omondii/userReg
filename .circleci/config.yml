@@ -33,11 +33,6 @@ jobs:
       # Checkout the code as the first step.
       - checkout
       - run:
-          name: Wait for DB
-          command: |
-            dockerize -wait tcp://localhost:5432 -timeout 1m
-
-      - run:
           name: Install dependancies
           command: |
             pip install -r requirements.txt
