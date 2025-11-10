@@ -9,6 +9,7 @@ COPY requirements.txt .
 
 # Install the required Python packages
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install flasgger
 
 # Copy the rest of your application code into the container
 COPY . .
@@ -22,3 +23,4 @@ EXPOSE 5000
 
 # Start the Flask application
 CMD ["gunicorn", "wsgi:app", "--bind", "0.0.0.0:5000"]
+
