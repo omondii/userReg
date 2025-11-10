@@ -32,7 +32,7 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-      -run:
+      - run:
         name: Activate venv
         command: |
           source venv/bin/activate
