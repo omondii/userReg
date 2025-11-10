@@ -32,6 +32,10 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
+      -run:
+        name: Activate venv
+        command: |
+          source venv/bin/activate
       - run:
           name: Install dependancies
           command: |
