@@ -36,7 +36,7 @@ jobs:
 
       - run:
           name: Build doker Image
-          command: docker build -t regv1 .
+          command: docker build -t regv1 -f api/Dockerfile api/
 
       - run:
           name: Run tests
