@@ -36,8 +36,7 @@ jobs:
 
       - run:
           name: Build doker Image
-          command: docker build -t regv1 -f api/Dockerfile api/
-
+          command: docker build -t regv1 -f api/Dockerfile .
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
