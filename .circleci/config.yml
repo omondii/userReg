@@ -32,21 +32,17 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
+      - setup_remote_docker
+
       - run:
-          name: Activate venv
-          command: |
-            source venv/bin/activate
-      - run:
-          name: Install dependancies
-          command: |
-            pip install -r requirements.txt
-            pip install flasgger==0.5.4
-          # app-dir: ~/project/package-directory/  # If your requirements.txt isn't in the root directory.
-          # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
+          name: Build doker Image
+          command: docker build -t regV1 .
+
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
-          command: pytest
+          command: |
+            docker run regV1 pytest
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/guides/orchestrate/workflows/ & https://circleci.com/docs/reference/configuration-reference/#workflows
