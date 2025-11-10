@@ -40,11 +40,11 @@ jobs:
       - run:
           name: Run tests in Docker
           command: |
-            pip install flasgger==0.5.4
             docker run -e DATABASE_URL="sqlite:///:memory:" \
                       -e SKIP_DB="true" \
                       -e CI="true" \
-                      regv1 pytest
+                      regv1 \
+                      pytest api/tests -v
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/guides/orchestrate/workflows/ & https://circleci.com/docs/reference/configuration-reference/#workflows
