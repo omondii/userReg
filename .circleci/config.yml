@@ -30,6 +30,8 @@ jobs:
           name: Run tests in Docker
           command: |
             docker run -e DATABASE_URL="sqlite:///:memory:" \
+                      -e JWT_SECRET_KEY="test-secret-key-for-ci" \
+                      -e SECRET_KEY="test-secret-key-for-ci" \
                       -e SKIP_DB="true" \
                       -e CI="true" \
                       regv1 \

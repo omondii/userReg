@@ -3,20 +3,27 @@
 Configuration file for all tests
 Pytest fixture functions for start-up and clean-up
 """
-from api.app import create_app
 import pytest
-from sqlalchemy import create_engine
-from api.Models.engine.db_storage import DBStorage
 from api.Models.tables import User, Organisation, Base
 from flask_jwt_extended import JWTManager, create_access_token
+import os
 
+# Test environment variables
+os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
+os.environ['JWT_SECRET_KEY'] = 'test-secret-key-for-testing'
+os.environ['SECRET_KEY'] = 'test-secret-key-for-testing'
+os.environ['TESTING'] = 'True'
+
+from api.app import create_app
+from api.Models.engine.db_storage import DBStorage
+from sqlalchemy import create_engine
 
 @pytest.fixture(scope='session')
 def app():
     """ Create a flask app test instance """
-    app = create_app(config_class='TESTING')
-    app.config['JWT_SECRET-KEY'] = 'grsyhryhtgr6yhrgtju6644'
-    JWTManager(app)
+    app = create_app()
+    app.config['TESTING'] = True
+
     yield app
 
 
@@ -31,15 +38,14 @@ def db_engine():
 @pytest.fixture(scope='function')
 def db(app, db_engine):
     """ Provide an isolated db session for each test """
-    app.db_storage = DBStorage(db_engine=db_engine)
-    Base.metadata.create_all(db_engine)
-    app.db_storage.reload()
-    yield app.db_storage
+    storage = DBStorage()
+
+    yield storage
 
     # Clean up the database after each test
     print("Cleaning up database")
     Base.metadata.drop_all(db_engine)
-    app.db_storage.close()
+    storage.close()
 
 
 @pytest.fixture(scope='session')

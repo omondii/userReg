@@ -17,6 +17,8 @@ COPY . .
 # Set environment variables for testing
 ENV DATABASE_URL=sqlite:///:memory:
 ENV PYTHONPATH=/app
+ENV JWT_SECRET_KEY=test-secret-key-for-ci
+ENV SECRET_KEY=test-secret-key-for-ci
 
 # Expose the port that Flask will run on
 EXPOSE 5000
